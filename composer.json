@@ -1,0 +1,30 @@
+{
+    "name": "sharedsway/helper",
+    "description": "helper",
+    "type": "no",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tony Java Z",
+            "email": "284141050@qq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "files": [
+            "src/helper.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sharedsway\\Helper\\Test\\Unit\\": "tests/unit/"
+        }
+    },
+    "require": {
+        "php": ">=7.2",
+        "sharedsway/common": "dev-master"
+    },
+    "require-dev": {
+        "codeception/codeception": "3.0.x-dev"
+    }
+}
