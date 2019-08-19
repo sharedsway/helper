@@ -5,47 +5,33 @@
  * Date: 19-8-18
  * Time: 下午7:45
  */
+use Sharedsway\Common;
+
 
 if (!function_exists('create_instance_params')) {
-
 
     /**
      * @param $class
      * @param array $vars
      * @return object
-     * @throws ReflectionException
+     * @throws Common\Exception
      */
     function create_instance_params($class, $vars = [])
     {
-        $ref = new \ReflectionClass($class);
-        if (!$ref->isInstantiable()) {
-            throw new Exception("类{$class} 不存在");
+        try {
+
+            $ref = new \ReflectionClass($class);
+            if (!$ref->isInstantiable()) {
+                throw new Common\Exception("类{$class} 不存在");
+            }
+            $constructor = $ref->getConstructor();
+            if (is_null($constructor)) {
+                return new $class;
+            }
+            return $ref->newInstanceArgs($vars);
+        } catch (ReflectionException $exception) {
+            throw new Common\Exception($exception->getMessage());
         }
-        $constructor = $ref->getConstructor();
-        if (is_null($constructor)) {
-            return new $class;
-        }
-//        $params        = $constructor->getParameters();
-//        $resolveParams = [];
-//        foreach ($params as $key => $value) {
-//            $name = $value->getName();
-//            if (isset($dicVars[$name])) {
-//                $resolveParams[] = $vars[$name];
-//            } else {
-//                $default = $value->isDefaultValueAvailable() ? $value->getDefaultValue() : null;
-//                if (is_null($default)) {
-//                    if ($value->getClass()) {
-//                        $resolveParams[] = create_instance_params($value->getClass()->getName(), $vars);
-//                    } else {
-//                        throw new Exception("{$name} 没有传值且没有默认值。");
-//                    }
-//                } else {
-//                    $resolveParams[] = $default;
-//                }
-//            }
-//        }
-//        var_dump($resolveParams);
-        return $ref->newInstanceArgs($vars);
     }
 
 }
@@ -59,13 +45,19 @@ if (!function_exists('create_instance_dic')) {
      * @param $class
      * @param array $dicVars
      * @return object
-     * @throws ReflectionException
+     * @throws Common\Exception
      */
     function create_instance_dic($class, $dicVars = [])
     {
-        $ref = new \ReflectionClass($class);
+        $ref = null;
+        try {
+
+            $ref = new \ReflectionClass($class);
+        } catch (ReflectionException $exception) {
+            throw new Common\Exception($exception->getMessage());
+        }
         if (!$ref->isInstantiable()) {
-            throw new Exception("类{$class} 不存在");
+            throw new Common\Exception("类{$class} 不存在");
         }
         $constructor = $ref->getConstructor();
         if (is_null($constructor)) {
@@ -83,7 +75,7 @@ if (!function_exists('create_instance_dic')) {
                     if ($value->getClass()) {
                         $resolveParams[] = create_instance_dic($value->getClass()->getName(), $dicVars);
                     } else {
-                        throw new Exception("{$name} 没有传值且没有默认值。");
+                        throw new Common\Exception("{$name} 没有传值且没有默认值。");
                     }
                 } else {
                     $resolveParams[] = $default;
@@ -96,14 +88,25 @@ if (!function_exists('create_instance_dic')) {
 }
 
 if (!function_exists('create_instance')) {
+
+    /**
+     * @param $class
+     * @return mixed
+     * @throws Common\Exception
+     */
     function create_instance($class)
     {
-        $ref = new \ReflectionClass($class);
-        if (!$ref->isInstantiable()) {
-            throw new Exception("类{$class} 不存在");
-        }
+        try {
 
-        return new $class;
+            $ref = new \ReflectionClass($class);
+            if (!$ref->isInstantiable()) {
+                throw new Common\Exception("类{$class} 不存在");
+            }
+
+            return new $class;
+        } catch (ReflectionException $exception) {
+            throw new Common\Exception($exception->getMessage());
+        }
 
     }
 }
